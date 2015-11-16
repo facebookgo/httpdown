@@ -341,7 +341,7 @@ func isUseOfClosedError(err error) bool {
 
 // ListenAndServe is a convenience function to serve and wait for a SIGTERM
 // or SIGINT before shutting down.
-func ListenAndServe(s *http.Server, hd *HTTP) error {
+func ListenAndServe(s *http.Server, hd *HTTP, beforeStopAction func()) error {
 	if hd == nil {
 		hd = &HTTP{}
 	}
@@ -368,6 +368,7 @@ func ListenAndServe(s *http.Server, hd *HTTP) error {
 	case s := <-signals:
 		signal.Stop(signals)
 		log.Printf("signal received: %s\n", s)
+        beforeStopAction()
 		if err := hs.Stop(); err != nil {
 			return err
 		}
